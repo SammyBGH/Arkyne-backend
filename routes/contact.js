@@ -1,58 +1,64 @@
-import React from 'react';
-import '../css/Contact.css';
+/**
+ * POST /api/contact
+ * Body: { name, email, phone, message, source? }
+ *
+ * Saves to leads.json
+ */
 
-export default function Contact() {
-  // use VITE env variables (set in project root .env) for phone & default message
-  const phone = import.meta.env.VITE_WHATSAPP_NUMBER || '233501234567';
-  const messageText = import.meta.env.VITE_WHATSAPP_MESSAGE || 'Hello Arkyn! I would like to talk about a project.';
-  const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(messageText)}`;
+import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import fs from 'fs-extra';
+import dotenv from 'dotenv';
 
-  const handleWhatsAppClick = async () => {
-    try {
-      // send lead to backend
-      await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: 'WhatsApp Visitor',
-          message: messageText,
-          source: 'whatsapp-link'
-        })
-      });
-    } catch (err) {
-      console.warn('Could not log WhatsApp click:', err);
+dotenv.config();
+
+const router = express.Router();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const LEADS_PATH = path.join(__dirname, '..', 'leads.json');
+
+// simple validation helper
+function isNonEmptyString(v) {
+  return typeof v === 'string' && v.trim().length > 0;
+}
+
+router.post('/', async (req, res) => {
+  try {
+    const { name, email, phone, message, source } = req.body || {};
+
+    // basic validation
+    if (!isNonEmptyString(name) || !isNonEmptyString(message)) {
+      return res.status(400).json({ ok: false, error: 'Name and message are required.' });
     }
 
-    // open WhatsApp in new tab
-    window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
-  };
+    // Create lead object
+    const lead = {
+      id: Date.now(),
+      name: name.trim(),
+      email: isNonEmptyString(email) ? email.trim() : null,
+      phone: isNonEmptyString(phone) ? phone.trim() : null,
+      message: message.trim(),
+      source: source || 'web',
+      createdAt: new Date().toISOString()
+    };
 
-  return (
-    <section id="contact" className="section contact">
-      <div className="contact-grid">
-        <div className="contact-card">
-          <h2>Let’s build something together</h2>
-          <p>Prefer WhatsApp? Tap the button to start a conversation. We generally respond within one business day.</p>
+    // ensure leads file exists
+    await fs.ensureFile(LEADS_PATH);
+    const leadsRaw = await fs.readFile(LEADS_PATH, 'utf8').catch(() => '[]');
+    let leads = [];
+    try { leads = JSON.parse(leadsRaw || '[]'); } catch { leads = []; }
 
-          <button className="btn whatsapp" onClick={handleWhatsAppClick}>
-            Chat on WhatsApp
-          </button>
+    // Append and save
+    leads.unshift(lead); // newest first
+    await fs.writeFile(LEADS_PATH, JSON.stringify(leads, null, 2), 'utf8');
 
-          <div className="contact-info">
-            <div><strong>Email</strong><span>hello@arkyn.com</span></div>
-            <div><strong>Location</strong><span>Kumasi, Ghana</span></div>
-          </div>
-        </div>
+    // Success response
+    return res.json({ ok: true, lead });
+  } catch (err) {
+    console.error('Contact save error:', err);
+    return res.status(500).json({ ok: false, error: 'Server error' });
+  }
+});
 
-        <div className="contact-side">
-          <h3>Quick brief</h3>
-          <p>Share a few lines about your product idea, timeline and budget. Or simply message us on WhatsApp and we'll take it from there.</p>
-        </div>
-      </div>
-
-      <footer className="site-footer">
-        <div>© {new Date().getFullYear()} Arkyn — Built with care</div>
-      </footer>
-    </section>
-  );
-}
+export default router;
