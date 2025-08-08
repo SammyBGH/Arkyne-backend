@@ -44,15 +44,15 @@ app.get('/api/leads', async (req, res) => {
   }
 });
 
-// Serve frontend in production
-if (process.env.NODE_ENV === 'production') {
-  const clientBuildPath = path.join(__dirname, '..', 'frontend', 'dist');
-  app.use(express.static(clientBuildPath));
 
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(clientBuildPath, 'index.html'));
-  });
-}
+// if (process.env.NODE_ENV === 'production') {
+//   const clientBuildPath = path.join(__dirname, '..', 'frontend', 'dist');
+//   app.use(express.static(clientBuildPath));
+
+//   app.get('*', (req, res) => {
+//     res.sendFile(path.join(clientBuildPath, 'index.html'));
+//   });
+// }
 
 app.listen(PORT, () => {
   console.log(`✅ Arkyn backend listening on port ${PORT}`);
