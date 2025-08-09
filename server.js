@@ -1,15 +1,15 @@
 /**
  * Arkyn backend - simple Express API for contact leads
  * - POST /api/contact  -> accepts { name, email, phone, message, source }
- * - Saves leads to leads.json
+ * - Saves leads to MongoDB
  */
 
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import path from 'path';
+import mongoose from 'mongoose';
 import { fileURLToPath } from 'url';
-import { readFile } from 'fs/promises';
+import path from 'path';
 
 dotenv.config();
 
@@ -21,38 +21,43 @@ const contactRoute = (await import('./routes/contact.js')).default;
 const app = express();
 const PORT = process.env.PORT || 5001;
 
+// Middleware
 app.use(cors());
 app.use(express.json());
 
-// simple health route
+// MongoDB connection
+const MONGO_URI = process.env.MONGO_URI;
+if (!MONGO_URI) {
+  console.error('❌ MONGO_URI not set in environment variables');
+  process.exit(1);
+}
+
+mongoose
+  .connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log('✅ Connected to MongoDB'))
+  .catch((err) => {
+    console.error('❌ MongoDB connection error:', err);
+    process.exit(1);
+  });
+
+// Health check
 app.get('/health', (req, res) => {
   res.json({ ok: true, service: 'arkyn-backend' });
 });
 
-// API routes
+// Routes
 app.use('/api/contact', contactRoute);
 
-// static served leads (optional — for admin / download)
-// WARNING: In production, protect this endpoint or remove it.
+// Optional: Fetch leads (for admin)
 app.get('/api/leads', async (req, res) => {
   try {
-    const file = path.join(__dirname, 'leads.json');
-    const raw = await readFile(file, 'utf8');
-    return res.json(JSON.parse(raw || '[]'));
+    const Lead = (await import('./models/Lead.js')).default;
+    const leads = await Lead.find().sort({ createdAt: -1 });
+    res.json(leads);
   } catch (err) {
-    return res.status(500).json({ error: 'Could not read leads' });
+    res.status(500).json({ error: 'Could not fetch leads' });
   }
 });
-
-
-// if (process.env.NODE_ENV === 'production') {
-//   const clientBuildPath = path.join(__dirname, '..', 'frontend', 'dist');
-//   app.use(express.static(clientBuildPath));
-
-//   app.get('*', (req, res) => {
-//     res.sendFile(path.join(clientBuildPath, 'index.html'));
-//   });
-// }
 
 app.listen(PORT, () => {
   console.log(`✅ Arkyn backend listening on port ${PORT}`);
