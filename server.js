@@ -1,7 +1,5 @@
 /**
  * Arkyn backend - simple Express API for contact leads
- * - POST /api/contact  -> accepts { name, email, phone, message, source }
- * - Saves leads to MongoDB
  */
 
 import express from 'express';
@@ -33,7 +31,7 @@ if (!MONGO_URI) {
 }
 
 mongoose
-  .connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .connect(MONGO_URI) // no deprecated options needed in modern versions
   .then(() => console.log('✅ Connected to MongoDB'))
   .catch((err) => {
     console.error('❌ MongoDB connection error:', err);
@@ -48,7 +46,7 @@ app.get('/health', (req, res) => {
 // Routes
 app.use('/api/contact', contactRoute);
 
-// Optional: Fetch leads (for admin)
+// Admin: Fetch leads
 app.get('/api/leads', async (req, res) => {
   try {
     const Lead = (await import('./models/Lead.js')).default;

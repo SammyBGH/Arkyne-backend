@@ -1,7 +1,6 @@
 /**
  * POST /api/contact
  * Body: { name, email, phone, message, source? }
- *
  * Saves to MongoDB
  */
 
@@ -21,14 +20,13 @@ router.post('/', async (req, res) => {
   try {
     const { name, email, phone, message, source } = req.body || {};
 
-    // Basic validation
     if (!isNonEmptyString(name) || !isNonEmptyString(message)) {
-      return res
-        .status(400)
-        .json({ ok: false, error: 'Name and message are required.' });
+      return res.status(400).json({
+        ok: false,
+        error: 'Name and message are required.',
+      });
     }
 
-    // Save to MongoDB
     const lead = await Lead.create({
       name: name.trim(),
       email: isNonEmptyString(email) ? email.trim() : null,
@@ -37,7 +35,7 @@ router.post('/', async (req, res) => {
       source: source || 'web',
     });
 
-    console.log('✅ Lead saved to MongoDB:', lead);
+    console.log(`✅ Lead saved to MongoDB: ${lead._id}`);
 
     return res.json({ ok: true, lead });
   } catch (err) {
