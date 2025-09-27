@@ -55,41 +55,6 @@ backend/
 ```
 ---
 
-## API
-
-### POST /api/newsletter
-
-Body
-```json
-{ "email": "user@example.com", "source": "footer-newsletter" }
-```
-Response
-```json
-{ "ok": true }
-```
-Curl
-```bash
-curl -X POST "$BASE_URL/api/newsletter" \
-  -H "Content-Type: application/json" \
-  -d '{"email":"user@example.com","source":"footer-newsletter"}'
-```
-### POST /api/contact
-
-Body
-```json
-{ "name": "John", "email": "john@example.com", "message": "Hi!", "source": "contact-form" }
-```
-Response
-```json
-{ "ok": true }
-```
-Curl
-```bash
-curl -X POST "$BASE_URL/api/contact" \
-  -H "Content-Type: application/json" \
-  -d '{"name":"John","email":"john@example.com","message":"Hi!","source":"contact-form"}'
-```
----
 
 ## Deploy notes
 
