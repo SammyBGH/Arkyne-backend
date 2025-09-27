@@ -15,6 +15,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const contactRoute = (await import('./routes/contact.js')).default;
+const newsletterRoute = (await import('./routes/newsletter.js')).default;
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -45,6 +46,7 @@ app.get('/health', (req, res) => {
 
 // Routes
 app.use('/api/contact', contactRoute);
+app.use('/api/newsletter', newsletterRoute);
 
 // Admin: Fetch leads
 app.get('/api/leads', async (req, res) => {
