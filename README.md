@@ -1,78 +1,110 @@
-# Arkyn Backend (Node + Express + MongoDB)
+# Arkyn Backend
 
-This backend provides simple endpoints for the Arkyn website:
+Simple Node + Express + MongoDB API for the Arkyn website. It powers:
 
-- `POST /api/contact` – logs contact form submissions
-- `POST /api/newsletter` – saves newsletter subscriptions
+- `POST /api/contact` – contact form submissions
+- `POST /api/newsletter` – newsletter sign-ups
 
-It uses Express, Mongoose, and `.env` configuration.
+No secrets are stored in this repo. Configure everything via environment variables.
 
-## Prerequisites
-- Node.js 18+
-- MongoDB (Atlas or local)
+---
 
-## Setup
-```bash
-npm install
-cp .env.example .env   # if provided; otherwise create .env using the template below
-npm run dev            # start with nodemon (development)
-# or
-npm start              # start with node (production)
-```
+## Quick start
 
-## Environment Variables
-Create `backend/.env`:
+- Install
+  ```bash
+  npm install
+  ```
+- Run (dev)
+  ```bash
+  npm run dev
+  ```
+- Run (prod)
+  ```bash
+  npm start
+  ```
+
+---
+
+## Environment
+
+Create `backend/.env`
 ```
 PORT
 MONGO_URI
 ```
 
-## Scripts
-- `npm run dev` – start server with nodemon
-- `npm start` – start server with node
+---
 
-## Project Structure
+## Scripts
+
+- `npm run dev` – nodemon, auto-reload
+- `npm start` – node server
+
+---
+
+## Project structure
 ```
 backend/
-  server.js              # Express app, mounts routes
-  routes/newsletter.js   # Newsletter POST endpoint
-  models/Subscriber.js   # Mongoose model for newsletter subscribers
-  routes/contact.js      # Contact POST endpoint (if separated)
+  server.js
+  routes/newsletter.js
+  routes/contact.js
+  models/Subscriber.js
   package.json
   .env
 ```
+---
 
 ## API
 
 ### POST /api/newsletter
-Request body:
+
+Body
 ```json
 { "email": "user@example.com", "source": "footer-newsletter" }
 ```
-Response:
+Response
 ```json
 { "ok": true }
 ```
-
+Curl
+```bash
+curl -X POST "$BASE_URL/api/newsletter" \
+  -H "Content-Type: application/json" \
+  -d '{"email":"user@example.com","source":"footer-newsletter"}'
+```
 ### POST /api/contact
-Request body:
+
+Body
 ```json
 { "name": "John", "email": "john@example.com", "message": "Hi!", "source": "contact-form" }
 ```
-Response:
+Response
 ```json
 { "ok": true }
 ```
+Curl
+```bash
+curl -X POST "$BASE_URL/api/contact" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"John","email":"john@example.com","message":"Hi!","source":"contact-form"}'
+```
+---
 
-## Deployment Notes
+## Deploy notes
+
 - Set `MONGO_URI` in your hosting provider secrets.
-- If deploying separately from the frontend, set `VITE_BACKEND_URL` on the frontend to your backend URL so the site can call `/api/*` in production.
+- If the backend is hosted separately, set `VITE_BACKEND_URL` in the frontend so it can reach `/api/*`.
 
-## Local Development with Frontend
-- Frontend dev server proxies `/api` to `http://localhost:5001` (configured in `frontend/vite.config.js`).
-- Start both servers:
+---
+
+## Local dev with frontend
+
+- Frontend dev server proxies `/api` to `http://localhost:5001`.
+- Start both:
   - `cd backend && npm run dev`
   - `cd frontend && npm run dev`
 
-## License
+---
+
 MIT © Arkyn
