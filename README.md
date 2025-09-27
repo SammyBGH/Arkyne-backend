@@ -23,8 +23,8 @@ npm start              # start with node (production)
 ## Environment Variables
 Create `backend/.env`:
 ```
-PORT=5001
-MONGO_URI=mongodb+srv://<user>:<password>@<cluster>/<db>?retryWrites=true&w=majority
+PORT
+MONGO_URI
 ```
 
 ## Scripts
