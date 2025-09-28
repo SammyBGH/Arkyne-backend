@@ -1,5 +1,5 @@
 /**
- * Arkyn backend - simple Express API for contact leads
+ * Arkyne backend - simple Express API for contact leads
  */
 
 import express from 'express';
@@ -41,7 +41,7 @@ mongoose
 
 // Health check
 app.get('/health', (req, res) => {
-  res.json({ ok: true, service: 'arkyn-backend' });
+  res.json({ ok: true, service: 'arkyne-backend' });
 });
 
 // Routes
@@ -60,5 +60,5 @@ app.get('/api/leads', async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`✅ Arkyn backend listening on port ${PORT}`);
+  console.log(`✅ Arkyne backend listening on port ${PORT}`);
 });

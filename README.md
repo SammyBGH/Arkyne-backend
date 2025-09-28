@@ -1,6 +1,6 @@
-# Arkyn Backend
+# Arkyne Backend
 
-Simple Node + Express + MongoDB API for the Arkyn website. It powers:
+Simple Node + Express + MongoDB API for the Arkyne website. It powers:
 
 - `POST /api/contact` – contact form submissions
 - `POST /api/newsletter` – newsletter sign-ups
@@ -72,4 +72,4 @@ backend/
 
 ---
 
-MIT © Arkyn
+MIT © Arkyne

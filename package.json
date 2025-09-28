@@ -1,7 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "Arkyn backend API",
+  "description": "Arkyne backend API",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -19,7 +19,7 @@
     "nodemon": "^2.0.22"
   },
   "keywords": [
-    "arkyn",
+    "arkyne",
     "backend",
     "api"
   ],
