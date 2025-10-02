@@ -26,12 +26,9 @@ Create `backend/.env`
 ```
 PORT
 MONGO_URI
-# SMTP for transactional emails (newsletter confirmation)
-SMTP_HOST
-SMTP_PORT
-SMTP_USER
-SMTP_PASS
-FROM_EMAIL=Arkyne <no-reply@yourdomain>
+# Brevo (Sendinblue) HTTP API for transactional emails
+BREVO_API_KEY=YOUR_BREVO_API_KEY
+FROM_EMAIL=Arkyne <no-reply@yourdomain.com>
 ```
 ---
 
