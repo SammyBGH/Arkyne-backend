@@ -20,18 +20,15 @@ router.post('/', async (req, res) => {
     }
 
     const normalized = email.trim().toLowerCase();
+    // Robust existence check to avoid undefined doc scenarios
+    let sub = await Subscriber.findOne({ email: normalized });
+    let alreadySubscribed = false;
 
-    // upsert to avoid duplicates and detect if it already existed
-    const result = await Subscriber.findOneAndUpdate(
-      { email: normalized },
-      { $setOnInsert: { email: normalized, source: source || 'newsletter' } },
-      { upsert: true, new: true, rawResult: true }
-    );
-    const sub = result?.value;
-    const alreadySubscribed = result?.lastErrorObject?.updatedExisting === true && !result?.lastErrorObject?.upserted;
-
-    // Attempt to send confirmation email. Do not block success if email fails.
-    if (!alreadySubscribed) {
+    if (sub) {
+      alreadySubscribed = true;
+    } else {
+      sub = await Subscriber.create({ email: normalized, source: source || 'newsletter' });
+      // Attempt to send confirmation email. Do not block success if email fails.
       try {
         const subject = 'You\'re subscribed to Arkyne';
         const text = `Thanks for subscribing to Arkyne updates! We'll occasionally email you about new work, insights, and product tips. If this wasn't you, you can ignore this email.`;
@@ -44,7 +41,7 @@ router.post('/', async (req, res) => {
       }
     }
 
-    return res.json({ ok: true, subscriber: { id: sub._id, email: sub.email }, alreadySubscribed: !!alreadySubscribed });
+    return res.json({ ok: true, subscriber: { id: sub._id, email: sub.email }, alreadySubscribed });
   } catch (err) {
     console.error('❌ Newsletter subscribe error:', err);
     return res.status(500).json({ ok: false, error: 'Server error' });
