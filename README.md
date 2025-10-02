@@ -20,25 +20,22 @@ No secrets are stored in this repo. Configure everything via environment variabl
   npm run dev
   ```
 - Run (prod)
-  ```bash
-  npm start
-  ```
-
----
-
 ## Environment
 
 Create `backend/.env`
 ```
 PORT
 MONGO_URI
+# SMTP for transactional emails (newsletter confirmation)
+SMTP_HOST
+SMTP_PORT
+SMTP_USER
+SMTP_PASS
+FROM_EMAIL=Arkyne <no-reply@yourdomain>
 ```
-
 ---
 
 ## Scripts
-
-- `npm run dev` – nodemon, auto-reload
 - `npm start` – node server
 
 ---
